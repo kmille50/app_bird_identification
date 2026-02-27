@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+
+# Environnement virtuel
+venv/
+env/
+
+# Packages / build
+dist/
+build/
+*.egg-info/
+
+# Tests / cache
+.cache/
+pytest_cache/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+#fichiers
+.env
+poetry.lock
+pyproject.toml
+yolov8s-seg.pt
+
+#folder
+to_treat
+.env
+./data/
