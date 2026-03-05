@@ -28,11 +28,14 @@ def app():
 
         
         pipe = pipeline("image-classification", model="chriamue/bird-species-classifier")
-        predictions = pipe(image)
+        result = pipe(image)
 
-        
+        top = result[0]
 
-        st.write("Predictions:", predictions)
+        label = top["label"]
+        score_percent = top["score"] * 100
+
+        st.write("Predictions:", f"{label} ==> {score_percent:.2f}%")
 
 if __name__ == "__main__":
     app()
