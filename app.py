@@ -2,12 +2,16 @@ import os
 import streamlit as st
 from PIL import Image
 import io
+import time
 from huggingface_hub import InferenceClient
+from transformers import pipeline
+
 
 client = InferenceClient(
     provider="auto",
     api_key=os.getenv("HF_TOKEN"),
 )
+
 
 def app():
     st.title("Bird Species Classifier")
@@ -22,15 +26,13 @@ def app():
 
         st.image(image, caption="Uploaded Image.", width=300)
 
-        predictions = client.image_classification(
-            buffer.getvalue(),
-            model="chriamue/bird-species-classifier"
-        )
+        
+        pipe = pipeline("image-classification", model="chriamue/bird-species-classifier")
+        predictions = pipe(image)
+
+        
 
         st.write("Predictions:", predictions)
-
-    else:
-        st.info("Please upload an image.")
 
 if __name__ == "__main__":
     app()
