@@ -10,7 +10,7 @@ The application is built with **Streamlit** and deployed for free using **Huggin
 
 You can try the application here:
 
-👉 https://huggingface.co/spaces/YOUR_USERNAME/YOUR_SPACE_NAME
+👉 https://huggingface.co/spaces/kmille50/app_bird_identification
 
 ---
 
@@ -59,7 +59,7 @@ European Goldfinch ==> 97.42%
 ## 📂 Project Structure
 
 ```
-bird-species-classifier/
+app_bird_identification/
 │
 ├── app.py
 ├── requirements.txt
@@ -73,7 +73,7 @@ bird-species-classifier/
 ### 1️⃣ Clone the repository
 
 ```
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git
+git clone https://github.com/kmille50/app_bird_identification.git
 cd YOUR_REPO
 ```
 
