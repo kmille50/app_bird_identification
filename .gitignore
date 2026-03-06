@@ -24,6 +24,9 @@ Desktop.ini
 poetry.lock
 pyproject.toml
 yolov8s-seg.pt
+lightroom-like-post-ttt.ipynb
+bird_species_classifier.ipynb
+*.jpg
 
 #folder
 to_treat
