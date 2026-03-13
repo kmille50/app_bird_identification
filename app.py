@@ -1,5 +1,6 @@
 import streamlit as st
 from PIL import Image
+import torch
 from transformers import pipeline
 
 pipe = pipeline("image-classification", model="chriamue/bird-species-classifier")
