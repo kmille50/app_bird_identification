@@ -1,24 +1,28 @@
 import streamlit as st
-from PIL import Image
 from transformers import pipeline
+from PIL import Image
 
-pipe = pipeline("image-classification", model="chriamue/bird-species-classifier")
+st.title("Bird Species Identifier")
 
-st.title("Bird Species Classifier")
+@st.cache_resource
+def load_model():
+    pipe = pipeline(
+        "image-classification",
+        model="chriamue/bird-species-classifier",
+        device=-1
+    )
+    return pipe
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg","jpeg","png"])
+pipe = load_model()
 
-if uploaded_file is not None:
+uploaded_file = st.file_uploader("Upload a bird image", type=["jpg","jpeg","png"])
 
+if uploaded_file:
     image = Image.open(uploaded_file)
+    st.image(image)
 
-    st.image(image, caption="Uploaded Image", width=300)
+    with st.spinner("Identifying bird..."):
+        result = pipe(image)
 
-    result = pipe(image)
-
-    top = result[0]
-
-    label = top["label"]
-    score_percent = top["score"] * 100
-
-    st.write(f"{label} ==> {score_percent:.2f}%")
+    st.write(result[0]["label"])
+    st.write(f"Confidence: {result[0]['score']:.2f}")
