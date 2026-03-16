@@ -15,7 +15,7 @@ def load_model():
 
 pipe = load_model()
 
-uploaded_file = st.file_uploader("Upload a bird image", type=["jpg","jpeg","png"])
+uploaded_file = st.file_uploader("Upload your pretty bird image", type=["jpg","jpeg","png"])
 
 if uploaded_file:
     image = Image.open(uploaded_file)
