@@ -2,7 +2,7 @@ import streamlit as st
 from transformers import pipeline
 from PIL import Image
 
-st.title("Bird Species Identifier")
+st.title("Bird Identifier")
 
 @st.cache_resource
 def load_model():
