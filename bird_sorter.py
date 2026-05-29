@@ -1,4 +1,3 @@
-import os
 import shutil
 from pathlib import Path
 
@@ -11,15 +10,11 @@ from tqdm import tqdm
 # CONFIG
 # =========================
 
-PHOTO_DIR = Path("./data_to_class")
+ORIGINAL_DIR = Path("data_to_class")
+CROPPED_DIR = Path("cropped_birds")
 
-# seuil minimal de confiance
 CONFIDENCE_THRESHOLD = 0.35
 
-# extensions JPEG
-JPEG_EXTENSIONS = [".jpg", ".jpeg", ".JPG", ".JPEG"]
-
-# extensions RAW
 RAW_EXTENSIONS = [
     ".cr2", ".cr3",
     ".nef",
@@ -39,7 +34,8 @@ print("Chargement du modèle...")
 classifier = pipeline(
     "image-classification",
     model="chriamue/bird-species-classifier",
-    device=0 if torch.cuda.is_available() else -1
+    device=0 if torch.cuda.is_available() else -1,
+    batch_size=8
 )
 
 print("Modèle chargé.")
@@ -49,60 +45,55 @@ print("Modèle chargé.")
 # =========================
 
 def clean_folder_name(name):
-    """
-    Nettoie le nom pour créer un dossier propre.
-    """
     name = name.replace(" ", "_")
     name = name.replace("/", "_")
     name = name.replace("\\", "_")
     return name
 
 def find_raw_files(base_path):
-    """
-    Cherche les RAW correspondant au JPEG.
-    """
+
     raw_files = []
 
     for ext in RAW_EXTENSIONS:
-        raw_candidate = base_path.with_suffix(ext)
-        if raw_candidate.exists():
-            raw_files.append(raw_candidate)
 
-        raw_candidate_upper = base_path.with_suffix(ext.upper())
-        if raw_candidate_upper.exists():
-            raw_files.append(raw_candidate_upper)
+        candidate1 = base_path.with_suffix(ext)
+        candidate2 = base_path.with_suffix(ext.upper())
+
+        if candidate1.exists():
+            raw_files.append(candidate1)
+
+        if candidate2.exists():
+            raw_files.append(candidate2)
 
     return raw_files
+
+# =========================
+# FILES
+# =========================
+
+jpeg_files = []
+jpeg_files += list(CROPPED_DIR.glob("*.jpg"))
+jpeg_files += list(CROPPED_DIR.glob("*.jpeg"))
+jpeg_files += list(CROPPED_DIR.glob("*.JPG"))
+jpeg_files += list(CROPPED_DIR.glob("*.JPEG"))
+
+jpeg_files = list(set(jpeg_files))
+
+print(f"{len(jpeg_files)} crops trouvés.")
 
 # =========================
 # MAIN
 # =========================
 
-photo_dir = Path(PHOTO_DIR)
-
-jpeg_files = []
-
-for ext in JPEG_EXTENSIONS:
-    jpeg_files.extend(photo_dir.glob(f"*{ext}"))
-
-print(f"{len(jpeg_files)} JPEG trouvés.")
-
-for jpeg_path in tqdm(jpeg_files):
+for crop_path in tqdm(jpeg_files):
 
     try:
-        # =========================
-        # FIND RAW FILES FIRST
-        # =========================
-
-        base_path = jpeg_path.with_suffix("")
-
-        raw_files = find_raw_files(base_path)
 
         # =========================
         # CLASSIFICATION
         # =========================
 
-        image = Image.open(jpeg_path).convert("RGB")
+        image = Image.open(crop_path).convert("RGB")
 
         results = classifier(image)
 
@@ -116,31 +107,41 @@ for jpeg_path in tqdm(jpeg_files):
         else:
             species_name = clean_folder_name(label)
 
-        target_dir = photo_dir / species_name
+        # =========================
+        # TARGET DIR
+        # =========================
+
+        target_dir = ORIGINAL_DIR / species_name
 
         target_dir.mkdir(exist_ok=True)
 
         # =========================
-        # MOVE JPEG
+        # ORIGINAL JPG
         # =========================
 
-        target_jpeg = target_dir / jpeg_path.name
+        original_jpg = ORIGINAL_DIR / crop_path.name
 
-        shutil.move(str(jpeg_path), str(target_jpeg))
+        if original_jpg.exists():
+
+            target_jpg = target_dir / original_jpg.name
+
+            shutil.move(str(original_jpg), str(target_jpg))
 
         # =========================
-        # MOVE RAW FILES
+        # RAW FILES
         # =========================
+
+        base_path = ORIGINAL_DIR / crop_path.stem
+
+        raw_files = find_raw_files(base_path)
 
         for raw_file in raw_files:
 
-            if raw_file.exists():
+            target_raw = target_dir / raw_file.name
 
-                target_raw = target_dir / raw_file.name
-
-                shutil.move(str(raw_file), str(target_raw))
+            shutil.move(str(raw_file), str(target_raw))
 
     except Exception as e:
-        print(f"Erreur avec {jpeg_path.name}: {e}")
+        print(f"Erreur avec {crop_path.name}: {e}")
 
 print("Tri terminé.")

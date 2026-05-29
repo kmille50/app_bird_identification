@@ -24,6 +24,7 @@ Desktop.ini
 poetry.lock
 pyproject.toml
 *.jpg
+yolov8x.pt
 
 #folder
 data_to_class
