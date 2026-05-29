@@ -26,6 +26,6 @@ pyproject.toml
 *.jpg
 
 #folder
-to_treat
+data_to_class
 .env
 ./data/
