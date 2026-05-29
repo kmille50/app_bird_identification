@@ -30,3 +30,4 @@ yolov8x.pt
 data_to_class
 .env
 ./data/
+cropped_brids
