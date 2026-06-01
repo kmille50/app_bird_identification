@@ -33,7 +33,9 @@ print("Chargement du modèle...")
 
 classifier = pipeline(
     "image-classification",
-    model="chriamue/bird-species-classifier",
+    #model="chriamue/bird-species-classifier",
+    #model="birder-project/vit_reg4_so150m_p14_ls_dino-v2-bio",
+    model="facebook/dinov2-small-imagenet1k-1-layer",
     device=0 if torch.cuda.is_available() else -1,
     batch_size=8
 )
